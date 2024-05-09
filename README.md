@@ -17,13 +17,34 @@
     }
 
   ```
-  新的打点方式 只需要在对应的对应的dom 上添加属性
+  新的打点方式 希望只需要在对应的对应的dom 上添加属性， 并且参数可已通过dom数进行覆盖共享
   ``` html
    <button data-log-click  data-log='{"mod": 12}' > 提交</button>
+
   ```
 
+- 原理 
+ * 1. 在我们指定的根节点上，进行事件监听
+ * 2. 监听到事件后，利用事件中  eventPath 属性， 找到事件路径，对路径上的dom 进行遍历，判断是否拥有需打点的标记属性， 如果有，则对路径上data-log 进行解析，然后通过on 函数 调用我们自己封装的日志统计。
 
-- 原理
-- 实现
+- 实现 （看代码 src/index.ts）总共200 多行较为简单
 - 最终效果
+ 1. 初始化
+ ```js
+ const track = new Track({
+  container: '#app'
+ })
+ track.on((event)=> {
+  console.log(event)
+  // event.type  event.params
+  // 这里可以根据事件类型，参数类型做不同的处理， 与第三方日志平台进行对接
+ })
+ ```
+ ```html
+ <button data-log-clickable  data-log-params='{"mod": 12}' data-log-params-type='click' > 提交</button>
+ ```
+
+- api 接口文档 
 - 不同框架进行封装，封装不同的打点类型
+
+- 1. vue
